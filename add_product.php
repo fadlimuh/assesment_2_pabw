@@ -10,18 +10,24 @@ if ($conn->connect_error) {
     die("Koneksi Gagal: " . $conn->connect_error);
 }
 
-$sql = "SELECT * FROM produk";
-$result = $conn->query($sql);
+$nama = $_POST['nama'];
+$jenis = $_POST['jenis'];
+$deskripsi_produk = $_POST['deskripsi_produk'];
+$kandungan = $_POST['kandungan'];
+$gambar = $_FILES['gambar']['name'];
+$gambar_temp = $_FILES['gambar']['tmp_name'];
+$gambar_path = "uploads/" . $gambar;
 
-$data_produk = array();
 
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $data_produk[] = $row;
-    }
-    echo json_encode($data_produk);
+move_uploaded_file($gambar_temp, $gambar_path);
+
+$sql = "INSERT INTO produk (nama, jenis, deskripsi_produk, gambar, kandungan) VALUES ('$nama', '$jenis', '$deskripsi_produk', '$gambar_path', '$kandungan')";
+
+if ($conn->query($sql) === TRUE) {
+    echo "Produk berhasil ditambahkan";
+    header('location: index.php');
 } else {
-    echo "0 results";
+    echo "Error: " . $sql . "<br>" . $conn->error;
 }
-$conn->close();
+
 ?>
